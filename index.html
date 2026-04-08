@@ -1,11 +1,197 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>개인데이터분석페이지_PM</title>
-</head>
-<body>
-    <div>SOYEONTEST</div>
-</body>
-</html>
+
+<style>
+  .container { padding: 1rem 0; font-family: var(--font-sans); }
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group label { font-size: 13px; color: var(--color-text-secondary); }
+  select { min-width: 160px; }
+  .metric-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .metric-card .label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric-card .value { font-size: 22px; font-weight: 500; }
+  .chart-wrap { position: relative; width: 100%; }
+</style>
+
+<div class="container">
+  <div class="filters">
+    <div class="filter-group">
+      <label>세그먼트</label>
+      <select id="seg">
+        <option value="traffic">유입 경로</option>
+        <option value="user_type">사용자 유형</option>
+        <option value="category">상품 카테고리</option>
+        <option value="price">가격대</option>
+        <option value="review">리뷰 클릭</option>
+        <option value="discount">할인 노출</option>
+        <option value="prev_page">이전 페이지</option>
+        <option value="duration">체류 시간</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>지표</label>
+      <select id="metric">
+        <option value="user_count">사용자 수 (명)</option>
+        <option value="pdp_cart">PDP → 장바구니</option>
+        <option value="pdp_purchase">PDP → 구매</option>
+        <option value="cart_purchase">장바구니 → 구매</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="metric-row" id="summary-cards"></div>
+
+  <div class="chart-wrap" id="chart-container"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DATA = {
+  traffic: {
+    label: '유입 경로',
+    rows: [
+      { name: '검색 (search)', user_count: 448, pdp_cart: 28.3, pdp_purchase: 10.0, cart_purchase: 35.4 },
+      { name: '오가닉 (organic)', user_count: 290, pdp_cart: 36.9, pdp_purchase: 9.0, cart_purchase: 24.3 },
+      { name: '광고 (ad)', user_count: 262, pdp_cart: 27.9, pdp_purchase: 8.0, cart_purchase: 28.8 },
+    ]
+  },
+  user_type: {
+    label: '사용자 유형',
+    rows: [
+      { name: '신규 (new)', user_count: 559, pdp_cart: 28.8, pdp_purchase: 8.6, cart_purchase: 29.8 },
+      { name: '재방문 (returning)', user_count: 441, pdp_cart: 33.1, pdp_purchase: 10.0, cart_purchase: 30.1 },
+    ]
+  },
+  category: {
+    label: '상품 카테고리',
+    rows: [
+      { name: 'outlet', user_count: 294, pdp_cart: 32.0, pdp_purchase: 14.3, cart_purchase: 44.7 },
+      { name: 'bag', user_count: 172, pdp_cart: 32.0, pdp_purchase: 5.8, cart_purchase: 18.2 },
+      { name: 'fashion', user_count: 268, pdp_cart: 29.5, pdp_purchase: 6.0, cart_purchase: 20.3 },
+      { name: 'accessory', user_count: 266, pdp_cart: 29.7, pdp_purchase: 9.0, cart_purchase: 30.4 },
+    ]
+  },
+  price: {
+    label: '가격대',
+    rows: [
+      { name: '5만원 미만', user_count: 517, pdp_cart: 33.1, pdp_purchase: 12.6, cart_purchase: 38.0 },
+      { name: '5~15만원', user_count: 278, pdp_cart: 23.0, pdp_purchase: 6.8, cart_purchase: 29.7 },
+      { name: '30만원 초과', user_count: 205, pdp_cart: 35.1, pdp_purchase: 3.9, cart_purchase: 11.1 },
+    ]
+  },
+  review: {
+    label: '리뷰 클릭',
+    rows: [
+      { name: '클릭 안 함', user_count: 667, pdp_cart: 27.9, pdp_purchase: 10.3, cart_purchase: 37.1 },
+      { name: '클릭함', user_count: 333, pdp_cart: 36.3, pdp_purchase: 6.9, cart_purchase: 19.0 },
+    ]
+  },
+  discount: {
+    label: '할인 노출',
+    rows: [
+      { name: '노출 안 함', user_count: 422, pdp_cart: 30.3, pdp_purchase: 8.3, cart_purchase: 27.3 },
+      { name: '노출됨', user_count: 578, pdp_cart: 31.0, pdp_purchase: 9.9, cart_purchase: 31.8 },
+    ]
+  },
+  prev_page: {
+    label: '이전 페이지',
+    rows: [
+      { name: '홈페이지', user_count: 230, pdp_cart: 42.2, pdp_purchase: 11.3, cart_purchase: 26.8 },
+      { name: '기타 (other)', user_count: 114, pdp_cart: 39.5, pdp_purchase: 14.9, cart_purchase: 37.8 },
+      { name: '광고 랜딩', user_count: 244, pdp_cart: 25.8, pdp_purchase: 7.8, cart_purchase: 30.2 },
+      { name: '검색 결과', user_count: 412, pdp_cart: 24.8, pdp_purchase: 7.3, cart_purchase: 29.4 },
+    ]
+  },
+  duration: {
+    label: '체류 시간',
+    rows: [
+      { name: '~1분', user_count: 736, pdp_cart: 28.7, pdp_purchase: 10.7, cart_purchase: 37.4 },
+      { name: '1~2분', user_count: 158, pdp_cart: 31.0, pdp_purchase: 6.3, cart_purchase: 20.4 },
+      { name: '2~3분', user_count: 62, pdp_cart: 48.4, pdp_purchase: 0.0, cart_purchase: 0.0 },
+      { name: '3분 이상', user_count: 44, pdp_cart: 38.6, pdp_purchase: 6.8, cart_purchase: 17.6 },
+    ]
+  }
+};
+
+const COLORS = ['#378ADD','#1D9E75','#BA7517','#D4537E','#7F77DD','#639922','#D85A30','#888780'];
+const METRIC_META = {
+  user_count: { label: '사용자 수', unit: '명', isPercent: false },
+  pdp_cart: { label: 'PDP → 장바구니', unit: '%', isPercent: true },
+  pdp_purchase: { label: 'PDP → 구매', unit: '%', isPercent: true },
+  cart_purchase: { label: '장바구니 → 구매', unit: '%', isPercent: true },
+};
+
+let chartInstance = null;
+
+function render() {
+  const seg = document.getElementById('seg').value;
+  const metricKey = document.getElementById('metric').value;
+  const segData = DATA[seg];
+  const meta = METRIC_META[metricKey];
+  const rows = segData.rows;
+  const values = rows.map(r => r[metricKey]);
+
+  const total = rows.reduce((s, r) => s + r.user_count, 0);
+  const maxVal = Math.max(...values);
+  const maxRow = rows[values.indexOf(maxVal)];
+
+  const cards = document.getElementById('summary-cards');
+  cards.innerHTML = `
+    <div class="metric-card"><div class="label">전체 사용자</div><div class="value">${total.toLocaleString()}명</div></div>
+    <div class="metric-card"><div class="label">세그먼트 수</div><div class="value">${rows.length}개</div></div>
+    <div class="metric-card"><div class="label">최고 ${meta.label}</div><div class="value" style="font-size:16px;margin-top:2px;">${maxRow.name}<br><span style="font-size:22px;">${meta.isPercent ? maxVal.toFixed(1) + '%' : maxVal.toLocaleString() + '명'}</span></div></div>
+  `;
+
+  const container = document.getElementById('chart-container');
+  const h = Math.max(300, rows.length * 60 + 80);
+  container.innerHTML = `<div style="position:relative;width:100%;height:${h}px;"><canvas id="myChart"></canvas></div>`;
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: rows.map(r => r.name),
+      datasets: [{
+        data: values,
+        backgroundColor: COLORS.slice(0, rows.length),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => meta.isPercent
+              ? ` ${ctx.parsed.x.toFixed(1)}%`
+              : ` ${ctx.parsed.x.toLocaleString()}명`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            callback: v => meta.isPercent ? v + '%' : v.toLocaleString(),
+            color: '#888780',
+            font: { size: 12 }
+          },
+          grid: { color: 'rgba(136,135,128,0.15)' }
+        },
+        y: {
+          ticks: { color: '#444441', font: { size: 13 } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+document.getElementById('seg').addEventListener('change', render);
+document.getElementById('metric').addEventListener('change', render);
+render();
+</script>
