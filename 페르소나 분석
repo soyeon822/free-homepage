@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>페르소나별 과제 선택 장단점 비교</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    background: #F5F4F0;
+    padding: 40px;
+    color: #1A1A18;
+  }
+
+  /* ── 헤더 ── */
+  .header { margin-bottom: 28px; }
+  .header h1 { font-size: 19px; font-weight: 600; color: #1A1A18; margin-bottom: 6px; }
+  .header p { font-size: 12px; color: #888780; line-height: 1.6; }
+  .header .warn { font-size: 11px; color: #A32D2D; margin-top: 4px; }
+
+  /* ── 카드 그리드 ── */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+  .card {
+    background: #FFFFFF;
+    border: 0.8px solid #E2DFD8;
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  /* 카드 헤더 */
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .badge {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; flex-shrink: 0;
+  }
+  .card-head-text .title { font-size: 14px; font-weight: 600; color: #1A1A18; }
+  .card-head-text .sub { font-size: 11px; color: #888780; margin-top: 1px; }
+
+  /* 추출 근거 */
+  .reason {
+    border-radius: 6px; padding: 7px 10px; margin-bottom: 14px;
+    font-size: 10px; line-height: 1.5;
+  }
+  .reason strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
+  /* 구분선 */
+  .divider { border: none; border-top: 0.6px solid #E2DFD8; margin-bottom: 14px; }
+
+  /* 핵심 지표 */
+  .metrics { display: flex; gap: 8px; margin-bottom: 16px; }
+  .metric {
+    flex: 1; background: #F9F9F7; border-radius: 8px;
+    padding: 8px 10px; text-align: center;
+  }
+  .metric.highlighted { border: 1.2px solid var(--accent); }
+  .metric .m-label { font-size: 10px; color: #888780; margin-bottom: 4px; }
+  .metric .m-val { font-size: 22px; font-weight: 700; }
+
+  /* 분석 섹션 */
+  .analysis-title { font-size: 11px; font-weight: 600; color: #1A1A18; margin-bottom: 8px; }
+
+  .bar-group { background: #F9F9F7; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-label { font-size: 10px; color: #888780; width: 110px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 9px; background: #E2DFD8; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-val { font-size: 12px; font-weight: 600; width: 32px; text-align: right; flex-shrink: 0; }
+
+  .gap-badge {
+    border-radius: 4px; padding: 4px 10px; margin-bottom: 14px;
+    font-size: 10px; font-weight: 600; text-align: center;
+  }
+
+  /* 장단점 */
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .pros, .cons { border-radius: 8px; padding: 10px 12px; }
+  .pros { background: #EAF3DE; }
+  .cons { background: #FCEBEB; }
+  .pc-title { font-size: 10px; font-weight: 600; margin-bottom: 6px; }
+  .pros .pc-title { color: #27500A; }
+  .cons .pc-title { color: #791F1F; }
+  .pc-item { font-size: 10px; line-height: 1.55; margin-bottom: 2px; }
+  .pros .pc-item { color: #3B6D11; }
+  .cons .pc-item { color: #A32D2D; }
+
+  /* 추천 배너 */
+  .recommend {
+    background: #534AB7; border-radius: 10px;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .rec-label {
+    background: #fff; color: #534AB7;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .rec-text { font-size: 11px; color: #EEEDFE; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<div class="header">
+  <h1>페르소나별 과제 선택 장단점 비교</h1>
+  <p>목표 지표: 상세페이지(PDP)에서 장바구니 담기율(ATC) 상승 · 데이터셋 1,000명<br>
+  전체 평균 ATC 31%  |  각 페르소나의 주요 변인별 ATC 차이를 근거로 장단점 도출</p>
+</div>
+
+<div class="grid">
+
+  <!-- ══ CARD A ══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge" style="background:#EEEDFE; color:#3C3489;">A</div>
+      <div class="card-head-text">
+        <div class="title">고가 구매형</div>
+        <div class="sub">over_300k (30만 원 초과) · n=205명</div>
+      </div>
+    </div>
+    <div class="reason" style="background:#EEEDFE;">
+      <strong style="color:#3C3489;">추출 근거</strong>
+      <span style="color:#534AB7;">상품가격대 = over_300k 필터. 고가일수록 신중한 비교·탐색 행동이 나타날 것으로 가정.</span>
+    </div>
+    <hr class="divider">
+
+    <div class="metrics">
+      <div class="metric" style="--accent:#7F77DD; border:1.2px solid #7F77DD;">
+        <div class="m-label">🎯 ATC</div>
+        <div class="m-val" style="color:#3C3489;">35%</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">평균 체류시간</div>
+        <div class="m-val" style="color:#BA7517;">99초</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">구매 전환율</div>
+        <div class="m-val" style="color:#A32D2D;">4%</div>
+      </div>
+    </div>
+
+    <div class="analysis-title">① 리뷰 클릭 여부 → ATC</div>
+    <div class="bar-group">
+      <div class="bar-row">
+        <span class="bar-label">클릭 O (n=108)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:55%; background:#7F77DD;"></div></div>
+        <span class="bar-val" style="color:#3C3489;">55%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">클릭 X (n=97)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:13%; background:#AFA9EC;"></div></div>
+        <span class="bar-val" style="color:#888780;">13%</span>
+      </div>
+    </div>
+    <div class="gap-badge" style="background:#EEEDFE; color:#3C3489;">격차 +42%p — 4개 페르소나 중 가장 명확한 인사이트</div>
+
+    <div class="analysis-title">② 체류시간 90초 기준 → ATC</div>
+    <div class="bar-group" style="margin-bottom:14px;">
+      <div class="bar-row">
+        <span class="bar-label">90초 이상 (n=102)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:46%; background:#7F77DD;"></div></div>
+        <span class="bar-val" style="color:#3C3489;">46%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">90초 미만 (n=103)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:24%; background:#AFA9EC;"></div></div>
+        <span class="bar-val" style="color:#888780;">24%</span>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <div class="pc-title">✓ 장점</div>
+        <div class="pc-item">리뷰클릭 ATC 격차 +42%p → 가설 근거 압도적</div>
+        <div class="pc-item">체류 길어 탐색 의지 확실 → 개선 여지 큼</div>
+        <div class="pc-item">솔루션이 가벼움 (리뷰 UI 개선)</div>
+        <div class="pc-item">변인 단순 → 논리 구조 명확</div>
+      </div>
+      <div class="cons">
+        <div class="pc-title">✗ 단점</div>
+        <div class="pc-item">n=205명으로 표본 가장 작음</div>
+        <div class="pc-item">구매 전환 4% → 매출 임팩트 제한적</div>
+        <div class="pc-item">고가 특성상 외부 변수 많음</div>
+        <div class="pc-item">(브랜드 신뢰, 오프라인 비교 등)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CARD B ══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge" style="background:#EAF3DE; color:#27500A;">B</div>
+      <div class="card-head-text">
+        <div class="title">저가 즉흥형</div>
+        <div class="sub">under_50k (5만 원 미만) · n=517명</div>
+      </div>
+    </div>
+    <div class="reason" style="background:#EAF3DE;">
+      <strong style="color:#27500A;">추출 근거</strong>
+      <span style="color:#3B6D11;">상품가격대 = under_50k 필터. 저가일수록 즉흥적·충동적 구매 행동이 나타날 것으로 가정.</span>
+    </div>
+    <hr class="divider">
+
+    <div class="metrics">
+      <div class="metric" style="border:1.2px solid #639922;">
+        <div class="m-label">🎯 ATC</div>
+        <div class="m-val" style="color:#3B6D11;">33%</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">평균 체류시간</div>
+        <div class="m-val" style="color:#0F6E56;">53초</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">구매 전환율</div>
+        <div class="m-val" style="color:#0F6E56;">13%</div>
+      </div>
+    </div>
+
+    <div class="analysis-title">① 할인 노출 여부 → ATC</div>
+    <div class="bar-group">
+      <div class="bar-row">
+        <span class="bar-label">노출 O (n=353)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:35%; background:#639922;"></div></div>
+        <span class="bar-val" style="color:#3B6D11;">35%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">노출 X (n=164)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:30%; background:#97C459;"></div></div>
+        <span class="bar-val" style="color:#888780;">30%</span>
+      </div>
+    </div>
+    <div class="gap-badge" style="background:#EAF3DE; color:#3B6D11;">격차 +5%p — 인사이트는 있으나 약한 편</div>
+
+    <div class="analysis-title">② 리뷰 클릭 여부 → ATC</div>
+    <div class="bar-group" style="margin-bottom:14px;">
+      <div class="bar-row">
+        <span class="bar-label">클릭 O</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25%; background:#97C459;"></div></div>
+        <span class="bar-val" style="color:#888780;">25%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">클릭 X</span>
+        <div class="bar-track"><div class="bar-fill" style="width:36%; background:#639922;"></div></div>
+        <span class="bar-val" style="color:#3B6D11;">36%</span>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <div class="pc-title">✓ 장점</div>
+        <div class="pc-item">n=517명 → 표본 가장 커 신뢰도 높음</div>
+        <div class="pc-item">구매 전환 13%로 매출 임팩트 가장 큼</div>
+        <div class="pc-item">즉흥 패턴 → UX 개선 효과 빠름</div>
+        <div class="pc-item">할인 배지 등 가벼운 솔루션 가능</div>
+      </div>
+      <div class="cons">
+        <div class="pc-title">✗ 단점</div>
+        <div class="pc-item">할인 격차 +5%p → 가설 근거 약함</div>
+        <div class="pc-item">ATC·구매전환 이미 높아 개선 여지 작음</div>
+        <div class="pc-item">리뷰 클릭 시 ATC 오히려 낮음</div>
+        <div class="pc-item">→ 단일 가설로 설득력 한계</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CARD C ══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge" style="background:#E1F5EE; color:#085041;">C</div>
+      <div class="card-head-text">
+        <div class="title">검색 유입형</div>
+        <div class="sub">유입경로=search · n=448명</div>
+      </div>
+    </div>
+    <div class="reason" style="background:#E1F5EE;">
+      <strong style="color:#085041;">추출 근거</strong>
+      <span style="color:#0F6E56;">유입경로=search 필터. 검색 후 클릭 진입 = 뚜렷한 목적을 가진 유저군으로 가정.</span>
+    </div>
+    <hr class="divider">
+
+    <div class="metrics">
+      <div class="metric" style="border:1.2px solid #1D9E75;">
+        <div class="m-label">🎯 ATC</div>
+        <div class="m-val" style="color:#085041;">28%</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">평균 체류시간</div>
+        <div class="m-val" style="color:#BA7517;">57초</div>
+      </div>
+      <div class="metric" style="background:#FCEBEB;">
+        <div class="m-label">전체 평균 대비</div>
+        <div class="m-val" style="color:#A32D2D; font-size:14px; padding-top:4px;">ATC 최저<br>-3%p</div>
+      </div>
+    </div>
+
+    <div class="analysis-title">① 직전 페이지 → ATC (핵심 변인)</div>
+    <div class="bar-group">
+      <div class="bar-row">
+        <span class="bar-label">other 경유 (n=32)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:50%; background:#1D9E75;"></div></div>
+        <span class="bar-val" style="color:#085041;">50%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">검색결과 직행 (n=171)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:18%; background:#9FE1CB;"></div></div>
+        <span class="bar-val" style="color:#A32D2D;">18%</span>
+      </div>
+    </div>
+    <div class="gap-badge" style="background:#E1F5EE; color:#085041;">격차 +32%p — 직전 페이지가 핵심, 단 변인 1개에 집중</div>
+
+    <div class="analysis-title">② 할인 노출 여부 → ATC</div>
+    <div class="bar-group" style="margin-bottom:14px;">
+      <div class="bar-row">
+        <span class="bar-label">노출 O</span>
+        <div class="bar-track"><div class="bar-fill" style="width:30%; background:#5DCAA5;"></div></div>
+        <span class="bar-val" style="color:#3B6D11;">30%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">노출 X</span>
+        <div class="bar-track"><div class="bar-fill" style="width:27%; background:#9FE1CB;"></div></div>
+        <span class="bar-val" style="color:#888780;">27%</span>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <div class="pc-title">✓ 장점</div>
+        <div class="pc-item">n=448명 → 충분한 표본 크기</div>
+        <div class="pc-item">직전 페이지 격차 +32%p → 명확한 포인트</div>
+        <div class="pc-item">검색 유입 개선은 실무 빈도 높은 과제</div>
+        <div class="pc-item">구매 전환 10%로 매출 연결 가능</div>
+      </div>
+      <div class="cons">
+        <div class="pc-title">✗ 단점</div>
+        <div class="pc-item">변인이 직전페이지 하나에 쏠림</div>
+        <div class="pc-item">솔루션이 검색 알고리즘·메타데이터 개선</div>
+        <div class="pc-item">으로 무거워질 수 있음</div>
+        <div class="pc-item">ATC 28%로 출발점 불리</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CARD D ══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge" style="background:#FAECE7; color:#712B13;">D</div>
+      <div class="card-head-text">
+        <div class="title">광고 유입형</div>
+        <div class="sub">유입경로=ad · n=262명 (신규 134 / 재방문 128)</div>
+      </div>
+    </div>
+    <div class="reason" style="background:#FAECE7;">
+      <strong style="color:#712B13;">추출 근거</strong>
+      <span style="color:#993C1D;">유입경로=ad 필터. 광고 클릭 = 외부에서 비교 중이던 유저의 진입으로 가정.</span>
+    </div>
+    <hr class="divider">
+
+    <div class="metrics">
+      <div class="metric" style="border:1.2px solid #D85A30;">
+        <div class="m-label">🎯 ATC</div>
+        <div class="m-val" style="color:#712B13;">28%</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">평균 체류시간</div>
+        <div class="m-val" style="color:#BA7517;">68초</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">리뷰 클릭률</div>
+        <div class="m-val" style="color:#BA7517;">39%</div>
+      </div>
+    </div>
+
+    <div class="analysis-title">① 직전 페이지 → ATC</div>
+    <div class="bar-group">
+      <div class="bar-row">
+        <span class="bar-label">homepage 경유 (n=56)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:38%; background:#D85A30;"></div></div>
+        <span class="bar-val" style="color:#712B13;">38%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">ad_landing 직행 (n=104)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:20%; background:#F0997B;"></div></div>
+        <span class="bar-val" style="color:#A32D2D;">20%</span>
+      </div>
+    </div>
+    <div class="gap-badge" style="background:#FAECE7; color:#993C1D;">격차 +18%p — 광고 랜딩→상세 불일치가 핵심</div>
+
+    <div class="analysis-title">② 리뷰 클릭 여부 → ATC</div>
+    <div class="bar-group" style="margin-bottom:14px;">
+      <div class="bar-row">
+        <span class="bar-label">클릭 O</span>
+        <div class="bar-track"><div class="bar-fill" style="width:35%; background:#D85A30;"></div></div>
+        <span class="bar-val" style="color:#712B13;">35%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">클릭 X</span>
+        <div class="bar-track"><div class="bar-fill" style="width:24%; background:#F0997B;"></div></div>
+        <span class="bar-val" style="color:#888780;">24%</span>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <div class="pc-title">✓ 장점</div>
+        <div class="pc-item">ATC·구매전환 모두 낮아 개선 여지 큼</div>
+        <div class="pc-item">ad_landing ATC 20% → 포인트 명확</div>
+        <div class="pc-item">리뷰+직전페이지 두 변인 활용 가능</div>
+        <div class="pc-item">광고 랜딩 UX 개선 → 현실적 솔루션</div>
+      </div>
+      <div class="cons">
+        <div class="pc-title">✗ 단점</div>
+        <div class="pc-item">n=262명으로 표본 작은 편</div>
+        <div class="pc-item">광고 소재·예산 등 외부 변수 많음</div>
+        <div class="pc-item">할인 효과 거의 없음 (-1%p)</div>
+        <div class="pc-item">→ 단일 가설로 약함</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 추천 배너 ── -->
+<div class="recommend">
+  <span class="rec-label">추천</span>
+  <p class="rec-text">
+    페르소나 A (고가 구매형) — 리뷰클릭 ATC 격차 +42%p로 가설 근거 가장 명확 · 솔루션 가벼움 · PDP 개선과 직결
+  </p>
+</div>
+
+</body>
+</html>
